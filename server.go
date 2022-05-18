@@ -19,13 +19,22 @@ func (s *SearchService) Search(ctx context.Context, r *pb.SearchRequest) (*pb.Se
 const PORT = "9001"
 
 func main() {
-	server := grpc.NewServer()
-	pb.RegisterSearchServiceServer(server, &SearchService{})
 
+	// 监听端口
 	lis, err := net.Listen("tcp", ":"+PORT)
 	if err != nil {
 		log.Fatalf("net.Listen err: %v", err)
 	}
 
-	server.Serve(lis)
+	// 创建新 grpc 服务
+	server := grpc.NewServer()
+
+	// 将 Search 服务注册到服务端
+	pb.RegisterSearchServiceServer(server, &SearchService{})
+	log.Printf("server listening at %v", lis.Addr())
+
+	// 调用服务
+	if err := server.Serve(lis); err != nil {
+		log.Fatalf("fail to server: %v", err)
+	}
 }
