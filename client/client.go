@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "memo-RPC/proto/pb_go"
+	pb "memo-RPC/client/ecommerce"
 )
 
 const PORT = "9001"

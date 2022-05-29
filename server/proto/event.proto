@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package server;
+
+option go_package = "../ecommerce";
+
+import "server/pkg/google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service EventService {
+  rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse) {
+    option (google.api.http) ={
+      post: "/event"
+      body: "item"
+    };
+  }
+  rpc ShowEvent(ShowEventRequest)     returns (ShowEventResponse) {
+    option (google.api.http) ={
+      get: "/event/{id}"
+    };
+  }
+  rpc ListEvents(ListEventsRequest)   returns (ListEventsResponse) {
+    option (google.api.http) ={
+      get: "/Event"
+    };
+  }
+  rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse) {
+    option (google.api.http) ={
+      delete: "/Event/{id}"
+    };
+  }
+  rpc UpdateEvent(UpdateEventRequest) returns (UpdateEventResponse) {
+    option (google.api.http) ={
+      put: "/Event"
+      body: "item"
+    };
+  }
+}
+
+message Event {
+  uint32 id = 1;
+  string name = 2;
+  string content = 3;
+
+  int64 createAt = 4;
+  int64 updateAt = 5;
+  int64 endTimeAt = 6;
+  int32 type = 7;
+  int32 state = 8;
+}
+
+message CreateEventRequest {
+  Event data = 1;
+}
+message CreateEventResponse {
+  string id = 1;
+}
+
+message ShowEventRequest {
+  string id = 1;
+}
+message ShowEventResponse {
+  Event data = 1;
+}
+
+message ListEventsRequest {
+  int32 limit = 1;
+  int32 pageSize = 2;
+}
+message ListEventsResponse {
+  repeated Event data = 1;
+}
+
+message DeleteEventRequest {
+  string id = 1;
+}
+message DeleteEventResponse {}
+
+message UpdateEventRequest {
+  Event data = 1;
+}
+message UpdateEventResponse {
+  Event data = 1;
+}
