@@ -21,19 +21,19 @@ func main() {
 	}
 	defer conn.Close()
 	// 创建新客户端，使用拨号创建的连接
-	client := pb.NewSearchServiceClient(conn)
+	client := pb.NewEventServiceClient(conn)
 
 	// 设置过期时间
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	// 访问该函数，获取 响应
-	resp, err := client.Search(ctx, &pb.SearchRequest{
-		Request: "gRPC",
+	resp, err := client.ShowEvent(ctx, &pb.ShowEventRequest{
+		Id: "gRPC",
 	})
 	if err != nil {
 		log.Fatalf("client.Search err: %v", err)
 	}
 
-	log.Printf("Greeting: %s", resp.GetResponse())
+	log.Printf("Greeting: %s", resp.String())
 }

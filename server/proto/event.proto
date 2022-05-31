@@ -4,8 +4,7 @@ package server;
 
 option go_package = "../ecommerce";
 
-import "server/pkg/google/api/annotations.proto";
-import "google/protobuf/timestamp.proto";
+import "server/proto/google/api/annotations.proto";
 
 service EventService {
   rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse) {
@@ -21,17 +20,17 @@ service EventService {
   }
   rpc ListEvents(ListEventsRequest)   returns (ListEventsResponse) {
     option (google.api.http) ={
-      get: "/Event"
+      get: "/event"
     };
   }
   rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse) {
     option (google.api.http) ={
-      delete: "/Event/{id}"
+      delete: "/event/{id}"
     };
   }
   rpc UpdateEvent(UpdateEventRequest) returns (UpdateEventResponse) {
     option (google.api.http) ={
-      put: "/Event"
+      put: "/event"
       body: "item"
     };
   }
@@ -50,7 +49,7 @@ message Event {
 }
 
 message CreateEventRequest {
-  Event data = 1;
+  Event item = 1;
 }
 message CreateEventResponse {
   string id = 1;
@@ -60,7 +59,7 @@ message ShowEventRequest {
   string id = 1;
 }
 message ShowEventResponse {
-  Event data = 1;
+  Event item = 1;
 }
 
 message ListEventsRequest {
@@ -68,17 +67,19 @@ message ListEventsRequest {
   int32 pageSize = 2;
 }
 message ListEventsResponse {
-  repeated Event data = 1;
+  repeated Event item = 1;
 }
 
 message DeleteEventRequest {
   string id = 1;
 }
-message DeleteEventResponse {}
+message DeleteEventResponse {
+  string id = 1;
+}
 
 message UpdateEventRequest {
-  Event data = 1;
+  Event item = 1;
 }
 message UpdateEventResponse {
-  Event data = 1;
+  Event item = 1;
 }

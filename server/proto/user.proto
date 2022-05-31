@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package server;
+
+option go_package = "../ecommerce";
+
+import "server/proto/google/api/annotations.proto";
+
+service UserService {
+  rpc Register (UserRegisterRequest)     returns (UserRegisterResponse) {
+    option (google.api.http) ={
+      post: "/register"
+      body: "*"
+    };
+  }
+  rpc Login (UserLoginRequest)           returns (UserLoginResponse) {
+    option (google.api.http) ={
+      post: "/login"
+      body: "*"
+    };
+  }
+  rpc ShowUserInfo (ShowUserInfoRequest) returns (ShowUserInfoResponse) {
+    option (google.api.http) ={
+      get: "/user/{id}"
+    };
+  }
+}
+
+message User {
+  uint32 id = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message UserLoginRequest {
+  string username = 1;
+  string password = 2;
+}
+message UserLoginResponse {
+  string token = 1;
+}
+
+message UserRegisterRequest {
+  string username = 1;
+  string password = 2;
+}
+message UserRegisterResponse {
+  uint32 id = 1;
+}
+
+message ShowUserInfoRequest {
+  uint32 id = 1;
+}
+message ShowUserInfoResponse {
+  User item = 1;
+}
