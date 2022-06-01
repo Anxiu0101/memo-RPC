@@ -1,6 +1,11 @@
 package service
 
-import "context"
+import (
+	"context"
+	"errors"
+	"gorm.io/gorm"
+	"memo-RPC/server/model"
+)
 import pb "memo-RPC/server/ecommerce"
 
 type EventService struct {
@@ -8,16 +13,32 @@ type EventService struct {
 
 func (eventService *EventService) ShowEvent(ctx context.Context, req *pb.ShowEventRequest) (*pb.ShowEventResponse, error) {
 
-	println("Show Event Info")
+	// 查询事件，若不存在或查询错误，写入日志并返回错误
+	var data model.Event
+	if err := model.DB.Model(model.Event{}).Where("id = ?", req.Id).First(&data).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		return &pb.ShowEventResponse{
+			Item: nil,
+		}, err
+	}
+
+	// 事件模型序列化为响应信息
+	result := model.BuildEventResponse(&data)
 
 	return &pb.ShowEventResponse{
-		Item: nil,
+		Item: result,
 	}, nil
 }
 
 func (eventService *EventService) CreateEvent(ctx context.Context, req *pb.CreateEventRequest) (*pb.CreateEventResponse, error) {
+	data := model.BuildEventModel(req.Item)
+	if err := model.DB.Create(data).Error; err != nil {
+		return &pb.CreateEventResponse{
+			Id: "0",
+		}, err
+	}
+
 	return &pb.CreateEventResponse{
-		Id: "0",
+		Id: string(data.ID),
 	}, nil
 }
 

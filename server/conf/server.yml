@@ -14,7 +14,7 @@ server:
 database:
   type: postgre
   user: postgres
-  password: 7391839
+  password: Ax7391839
   host: 127.0.0.1
   name: memo
   port: 5432
