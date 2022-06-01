@@ -9,6 +9,23 @@ go get -u github.com/golang/protobuf/protoc-gen-go
 go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 ```
 
+```shell
+├─client
+│  ├─ecommerce
+│  └─router
+└─server
+    ├─certs
+    ├─conf
+    ├─ecommerce
+    ├─model
+    ├─pkg
+    │  └─util
+    ├─proto
+    │  └─google
+    │      └─api
+    └─service
+```
+
 
 
 ### 模型
@@ -85,5 +102,13 @@ An optional company name []:Anxiu
 
 
 
+## 关于 Go-callsiv
+
+```shell
+go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
+# 将在 localhost:7878 展示
+```
 
 
+
+关于 微服务 我现在的理解是，将原本一个大型的项目进行拆分，分解成几个微服务。在服务器集群中，每一台主机只负责其中一个微服务模块。而 RPC 是解决不同服务之间的函数调用的渠道。
