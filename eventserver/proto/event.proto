@@ -4,7 +4,7 @@ package server;
 
 option go_package = "../ecommerce";
 
-import "server/proto/google/api/annotations.proto";
+import "eventserver/proto/google/api/annotations.proto";
 
 service EventService {
   rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse) {

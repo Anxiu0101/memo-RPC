@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
-	"memo-RPC/server/model"
+	"memo-RPC/eventserver/model"
 )
-import pb "memo-RPC/server/ecommerce"
+import pb "memo-RPC/eventserver/ecommerce"
 
 type EventService struct {
 }

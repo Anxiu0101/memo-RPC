@@ -112,3 +112,8 @@ go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
 
 
 关于 微服务 我现在的理解是，将原本一个大型的项目进行拆分，分解成几个微服务。在服务器集群中，每一台主机只负责其中一个微服务模块。而 RPC 是解决不同服务之间的函数调用的渠道。
+
+## 关于用户认证
+
+在这个 demo 中使用 gRPC 的拦截器与 token 实现对于用户操作权限的鉴权。
+

@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"log"
-	"memo-RPC/server/conf"
+	"memo-RPC/userserver/conf"
 )
 
 var DB *gorm.DB
@@ -48,6 +48,5 @@ func Setup() {
 	// set auto migrate
 	DB.AutoMigrate(
 		&User{},
-		&Event{},
 	)
 }

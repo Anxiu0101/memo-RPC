@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	pb "memo-RPC/server/ecommerce"
+	pb "memo-RPC/userserver/ecommerce"
 )
 
 type UserService struct {

@@ -2,7 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
-	pb "memo-RPC/server/ecommerce"
+	pb "memo-RPC/eventserver/ecommerce"
 )
 
 type Event struct {
