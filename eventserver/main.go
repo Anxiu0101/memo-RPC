@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"memo-RPC/eventserver/conf"
 	"memo-RPC/eventserver/ecommerce"
@@ -27,6 +28,16 @@ func main() {
 		log.Fatalf("net.Listen err: %v", err)
 	}
 
+	var opts []grpc.ServerOption
+
+	// TLS 认证
+	certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
+	if err != nil {
+		log.Printf("Failed to generate credentials %v", err)
+	}
+
+	opts = append(opts, grpc.Creds(certs))
+
 	// 使用一元拦截器（grpc.UnaryInterceptor），验证请求
 	// TODO 增加流式请求拦截器
 	var interceptor grpc.UnaryServerInterceptor
@@ -40,8 +51,10 @@ func main() {
 		return handler(ctx, req)
 	}
 
+	opts = append(opts, grpc.UnaryInterceptor(interceptor))
+
 	// 创建新 grpc 服务
-	server := grpc.NewServer(grpc.UnaryInterceptor(interceptor))
+	server := grpc.NewServer(opts...)
 
 	// 将服务注册到服务端
 	ecommerce.RegisterEventServiceServer(server, &service.EventService{})

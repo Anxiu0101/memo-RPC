@@ -1,6 +1,7 @@
 package main
 
 import (
+	"google.golang.org/grpc/credentials"
 	"log"
 	"memo-RPC/userserver/conf"
 	"memo-RPC/userserver/ecommerce"
@@ -37,6 +38,16 @@ func main() {
 	//	// 继续处理请求
 	//	return handler(ctx, req)
 	//}
+
+	var opts []grpc.ServerOption
+
+	// TLS 认证
+	certs, err := credentials.NewServerTLSFromFile("../certs/server-key.pem", "../certs/server-req.csr")
+	if err != nil {
+		log.Printf("Failed to generate credentials %v", err)
+	}
+
+	opts = append(opts, grpc.Creds(certs))
 
 	// 创建新 grpc 服务
 	// TODO 分离获取令牌功能和用户信息操作功能

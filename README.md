@@ -117,3 +117,20 @@ go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
 
 在这个 demo 中使用 gRPC 的拦截器与 token 实现对于用户操作权限的鉴权。
 
+在服务端入口增加拦截器代码
+
+```go
+	// 使用一元拦截器（grpc.UnaryInterceptor），验证请求
+	// TODO 增加流式请求拦截器
+	var interceptor grpc.UnaryServerInterceptor
+	interceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+		// 拦截普通方法请求，验证Token
+		err = service.CheckAuthority(ctx)
+		if err != nil {
+			return
+		}
+		// 继续处理请求
+		return handler(ctx, req)
+	}
+```
+

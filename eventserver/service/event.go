@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	pb "memo-RPC/eventserver/ecommerce"
 	"memo-RPC/eventserver/model"
 )
-import pb "memo-RPC/eventserver/ecommerce"
 
 type EventService struct {
+	pb.UnimplementedEventServiceServer
 }
 
 func (eventService *EventService) ShowEvent(ctx context.Context, req *pb.ShowEventRequest) (*pb.ShowEventResponse, error) {
