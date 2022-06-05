@@ -51,7 +51,7 @@ func main() {
 
 	// 创建新 grpc 服务
 	// TODO 分离获取令牌功能和用户信息操作功能
-	//server := grpc.NewServer(grpc.UnaryInterceptor(interceptor))
+	// server := grpc.NewServer(opts...)
 	server := grpc.NewServer()
 
 	// 将服务注册到服务端

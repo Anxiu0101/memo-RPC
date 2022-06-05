@@ -24,7 +24,7 @@ func (user *User) SetPassword(password string) error {
 }
 
 //CheckPassword 校验密码
-func (user *User) CheckPassword(password string) bool {
+func (user *User) CheckPassword(password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	return err == nil
+	return err
 }
