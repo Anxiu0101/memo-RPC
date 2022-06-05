@@ -1,3 +1,17 @@
+## 介绍
+
+将原本的备忘录项目进行拆分，分为三个部分
+
+第一个是备忘录系统的 client，也是系统的前台。主要功能是调用另外两个微服务模块的服务，另外也通过 `gRPC-gateway` 将 `RESTful` 请求转化为 `proto` 请求，使得该系统可以同时处理 RESTful 协议和 RPC 协议的请求。
+
+第二个是备忘录系统的用户服务，主要针对的是用户相关的请求。这一块的主要技术要点是 gRPC 的 token 颁发。端口为 9002
+
+第三个是备忘录系统的事件服务，也是备忘录系统的主要服务。这一块的主要技术要点是通过 gRPC 拦截器进行 token 的认证，以及具体的业务代码。端口为 9001
+
+
+
+
+
 ## 依赖
 
 ```shell
@@ -25,6 +39,12 @@ go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
     │      └─api
     └─service
 ```
+
+
+
+
+
+
 
 
 

@@ -17,7 +17,7 @@ func init() {
 	model.Setup()
 }
 
-const PORT = ":9001"
+const PORT = ":9002"
 
 func main() {
 
@@ -42,7 +42,7 @@ func main() {
 	var opts []grpc.ServerOption
 
 	// TLS 认证
-	certs, err := credentials.NewServerTLSFromFile("../certs/server-key.pem", "../certs/server-req.csr")
+	certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
 	if err != nil {
 		log.Printf("Failed to generate credentials %v", err)
 	}
