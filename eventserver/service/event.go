@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	pb "memo-RPC/eventserver/ecommerce"
 	"memo-RPC/eventserver/model"
+	"strconv"
 )
 
 type EventService struct {
@@ -13,7 +14,6 @@ type EventService struct {
 }
 
 func (eventService *EventService) ShowEvent(ctx context.Context, req *pb.ShowEventRequest) (*pb.ShowEventResponse, error) {
-
 	// 查询事件，若不存在或查询错误，写入日志并返回错误
 	var data model.Event
 	if err := model.DB.Model(model.Event{}).Where("id = ?", req.Id).First(&data).Error; errors.Is(err, gorm.ErrRecordNotFound) {
@@ -23,10 +23,10 @@ func (eventService *EventService) ShowEvent(ctx context.Context, req *pb.ShowEve
 	}
 
 	// 事件模型序列化为响应信息
-	result := model.BuildEventResponse(&data)
+	item := model.BuildEventResponse(&data)
 
 	return &pb.ShowEventResponse{
-		Item: result,
+		Item: item,
 	}, nil
 }
 
@@ -39,7 +39,7 @@ func (eventService *EventService) CreateEvent(ctx context.Context, req *pb.Creat
 	}
 
 	return &pb.CreateEventResponse{
-		Id: string(data.ID),
+		Id: strconv.Itoa(int(data.ID)),
 	}, nil
 }
 
@@ -50,13 +50,35 @@ func (eventService *EventService) ListEvents(ctx context.Context, req *pb.ListEv
 }
 
 func (eventService *EventService) DeleteEvent(ctx context.Context, req *pb.DeleteEventRequest) (*pb.DeleteEventResponse, error) {
+
+	var data model.Event
+	if err := model.DB.Model(model.Event{}).Where("id = ?", req.Id).First(&data).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		return &pb.DeleteEventResponse{
+			Id: "0",
+		}, err
+	}
+
+	if err := model.DB.Model(model.Event{}).Delete(&data).Error; err != nil {
+		return &pb.DeleteEventResponse{
+			Id: "0",
+		}, err
+	}
+
 	return &pb.DeleteEventResponse{
-		Id: "0",
+		Id: strconv.Itoa(int(data.ID)),
 	}, nil
 }
 
 func (eventService *EventService) UpdateEvent(ctx context.Context, req *pb.UpdateEventRequest) (*pb.UpdateEventResponse, error) {
+
+	var data = model.BuildEventModel(req.Item)
+	if err := model.DB.Model(model.Event{}).Save(data).Error; err != nil {
+		return &pb.UpdateEventResponse{
+			Item: nil,
+		}, err
+	}
+
 	return &pb.UpdateEventResponse{
-		Item: nil,
+		Item: model.BuildEventResponse(data),
 	}, nil
 }

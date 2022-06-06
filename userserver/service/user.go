@@ -37,14 +37,36 @@ func (*UserService) Login(ctx context.Context, req *pb.UserLoginRequest) (*pb.Us
 		}, err
 	}
 
+	// 返回 token
 	return &pb.UserLoginResponse{
 		Token: token,
 	}, nil
 }
 
 func (*UserService) Register(ctx context.Context, req *pb.UserRegisterRequest) (*pb.UserRegisterResponse, error) {
+
+	var user model.User
+	if err := model.DB.Where("username = ?", req.Username).Find(&user).Error; err != nil {
+		return &pb.UserRegisterResponse{
+			Id: 0,
+		}, err
+	}
+
+	user.Username = req.Username
+	if err := user.SetPassword(req.Password); err != nil {
+		return &pb.UserRegisterResponse{
+			Id: 0,
+		}, err
+	}
+
+	if err := model.DB.Model(model.User{}).Create(&user).Error; err != nil {
+		return &pb.UserRegisterResponse{
+			Id: 0,
+		}, err
+	}
+
 	return &pb.UserRegisterResponse{
-		Id: 0,
+		Id: uint32(user.ID),
 	}, nil
 }
 

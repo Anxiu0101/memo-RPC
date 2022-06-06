@@ -18,7 +18,7 @@ func init() {
 	model.Setup()
 }
 
-const PORT = ":9001"
+const PORT = ":9002"
 
 func main() {
 
