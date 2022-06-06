@@ -2,13 +2,12 @@ package main
 
 import (
 	"context"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"memo-RPC/client/ecommerce"
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-
 	pb "memo-RPC/client/ecommerce"
 )
 
@@ -18,7 +17,7 @@ const (
 )
 
 var (
-	Token = ""
+	Token string
 )
 
 func main() {
@@ -27,8 +26,13 @@ func main() {
 }
 
 func testUserService() {
+	//certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
+	//if err != nil {
+	//	log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
+	//}
 	// 拨号连接
 	conn, err := grpc.Dial(":"+UserPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	//conn, err := grpc.Dial(":"+UserPort, grpc.WithTransportCredentials(certs))
 	if err != nil {
 		log.Fatalf("grpc.Dial err: %v", err)
 	} else {
@@ -77,8 +81,13 @@ func (auth *TokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (m
 func (auth *TokenAuth) RequireTransportSecurity() bool { return false }
 
 func testEventService() {
+	//certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
+	//if err != nil {
+	//	log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
+	//}
 	// 拨号连接
 	conn, err := grpc.Dial(":"+EventPort,
+		//grpc.WithTransportCredentials(certs),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&TokenAuth{
 			token: "0",
@@ -97,9 +106,9 @@ func testEventService() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	// 访问该函数，获取 响应
-
+	// 访问该函数，获取响应
 	// 创建新事件
+	log.Println("Before Creating Event")
 	resp1, err := client.CreateEvent(ctx, &pb.CreateEventRequest{
 		Item: &ecommerce.Event{
 			Name:      "test1",
@@ -111,9 +120,9 @@ func testEventService() {
 	})
 	if err != nil {
 		log.Fatalf("client.CreateEvent err: %v", err)
-	} else {
-		log.Printf("Greeting: %s", resp1.String())
 	}
+	log.Printf("Greeting: %s", resp1.String())
+	log.Println("After Creating Event")
 
 	resp4, err := client.ShowEvent(ctx, &pb.ShowEventRequest{
 		Id: "1",

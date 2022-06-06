@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"log"
 	pb "memo-RPC/eventserver/ecommerce"
 	"memo-RPC/eventserver/model"
 	"strconv"
@@ -31,6 +32,7 @@ func (eventService *EventService) ShowEvent(ctx context.Context, req *pb.ShowEve
 }
 
 func (eventService *EventService) CreateEvent(ctx context.Context, req *pb.CreateEventRequest) (*pb.CreateEventResponse, error) {
+	log.Println("Creating Token")
 	data := model.BuildEventModel(req.Item)
 	if err := model.DB.Create(data).Error; err != nil {
 		return &pb.CreateEventResponse{

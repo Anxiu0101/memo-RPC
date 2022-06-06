@@ -5,10 +5,13 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 // CheckAuthority 验证token
 func CheckAuthority(ctx context.Context) error {
+
+	log.Println("Checking Token")
 
 	// Get metadata from Context
 	md, ok := metadata.FromIncomingContext(ctx)
