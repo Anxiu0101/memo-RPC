@@ -81,7 +81,7 @@ func testEventService() {
 	conn, err := grpc.Dial(":"+EventPort,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&TokenAuth{
-			token: Token,
+			token: "0",
 		}),
 	)
 	if err != nil {

@@ -16,17 +16,13 @@ func CheckAuthority(ctx context.Context) error {
 		return status.Errorf(codes.Unauthenticated, "获取Token失败")
 	}
 	var (
-		appID     string
-		appSecret string
+		token string
 	)
-	if value, ok := md["app_id"]; ok {
-		appID = value[0]
+	if value, ok := md["token"]; ok {
+		token = value[0]
 	}
-	if value, ok := md["app_secret"]; ok {
-		appSecret = value[0]
-	}
-	if appID != "grpc_token" || appSecret != "123456" {
-		return status.Errorf(codes.Unauthenticated, "Token无效: app_id=%s, app_secret=%s", appID, appSecret)
+	if token == "0" {
+		return status.Errorf(codes.Unauthenticated, "Token无效: token=%s", token)
 	}
 	return nil
 }
