@@ -74,7 +74,7 @@ func (eventService *EventService) DeleteEvent(ctx context.Context, req *pb.Delet
 func (eventService *EventService) UpdateEvent(ctx context.Context, req *pb.UpdateEventRequest) (*pb.UpdateEventResponse, error) {
 
 	var data = model.BuildEventModel(req.Item)
-	if err := model.DB.Model(model.Event{}).Save(data).Error; err != nil {
+	if err := model.DB.Model(model.Event{}).Where("ID = ?", req.Item.Id).Updates(data).Error; err != nil {
 		return &pb.UpdateEventResponse{
 			Item: nil,
 		}, err

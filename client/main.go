@@ -21,7 +21,7 @@ var (
 )
 
 func main() {
-	testUserService()
+	//testUserService()
 	testEventService()
 }
 
@@ -89,9 +89,9 @@ func testEventService() {
 	conn, err := grpc.Dial(":"+EventPort,
 		//grpc.WithTransportCredentials(certs),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithPerRPCCredentials(&TokenAuth{
-			token: "0",
-		}),
+		//grpc.WithPerRPCCredentials(&TokenAuth{
+		//	token: "0",
+		//}),
 	)
 	if err != nil {
 		log.Fatalf("grpc.Dial err: %v", err)
@@ -108,21 +108,32 @@ func testEventService() {
 
 	// 访问该函数，获取响应
 	// 创建新事件
-	log.Println("Before Creating Event")
-	resp1, err := client.CreateEvent(ctx, &pb.CreateEventRequest{
+	//log.Println("Before Creating Event")
+	//eventResp1, err := client.CreateEvent(ctx, &pb.CreateEventRequest{
+	//	Item: &ecommerce.Event{
+	//		Name:      "test1",
+	//		Content:   "test Event function",
+	//		EndTimeAt: time.Now().Add(3 * time.Hour).Unix(),
+	//		Type:      1,
+	//		State:     1,
+	//	},
+	//})
+	//if err != nil {
+	//	log.Fatalf("client.CreateEvent err: %v", err)
+	//}
+	//log.Printf("Greeting: %s", eventResp1.String())
+	//log.Println("After Creating Event")
+
+	resp3, err := client.UpdateEvent(ctx, &pb.UpdateEventRequest{
 		Item: &ecommerce.Event{
-			Name:      "test1",
-			Content:   "test Event function",
-			EndTimeAt: time.Now().Add(3 * time.Hour).Unix(),
-			Type:      1,
-			State:     1,
+			Id:   1,
+			Name: "test1 updated",
 		},
 	})
 	if err != nil {
-		log.Fatalf("client.CreateEvent err: %v", err)
+		log.Fatalf("client.UpdateEvent err: %v", err)
 	}
-	log.Printf("Greeting: %s", resp1.String())
-	log.Println("After Creating Event")
+	log.Printf("Greeting: %s", resp3.String())
 
 	resp4, err := client.ShowEvent(ctx, &pb.ShowEventRequest{
 		Id: "1",
@@ -131,12 +142,4 @@ func testEventService() {
 		log.Fatalf("client.ShowEvent err: %v", err)
 	}
 	log.Printf("Greeting: %s", resp4.String())
-}
-
-type Event struct {
-	Name      string `json:"name"`
-	Content   string `json:"content"`
-	EndTimeAt int64  `json:"endTime_at"`
-	State     int    `json:"state,omitempty"`
-	Type      int    `json:"type,omitempty"`
 }
