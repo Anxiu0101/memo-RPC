@@ -124,6 +124,14 @@ func testEventService() {
 	//log.Printf("Greeting: %s", eventResp1.String())
 	//log.Println("After Creating Event")
 
+	resp2, err := client.DeleteEvent(ctx, &pb.DeleteEventRequest{
+		Id: "2",
+	})
+	if err != nil {
+		log.Fatalf("client.DeleteEvent err: %v", err)
+	}
+	log.Printf("Greeting: %s", resp2.String())
+
 	resp3, err := client.UpdateEvent(ctx, &pb.UpdateEventRequest{
 		Item: &ecommerce.Event{
 			Id:   1,

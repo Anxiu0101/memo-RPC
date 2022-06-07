@@ -46,8 +46,21 @@ func (eventService *EventService) CreateEvent(ctx context.Context, req *pb.Creat
 }
 
 func (eventService *EventService) ListEvents(ctx context.Context, req *pb.ListEventsRequest) (*pb.ListEventsResponse, error) {
+
+	var items []model.Event
+	if err := model.DB.Model(model.Event{}).Find(&items).Error; err != nil {
+		return &pb.ListEventsResponse{
+			Item: nil,
+		}, err
+	}
+
+	var result []*pb.Event
+	for i, item := range items {
+		result[i] = model.BuildEventResponse(&item)
+	}
+
 	return &pb.ListEventsResponse{
-		Item: nil,
+		Item: result,
 	}, nil
 }
 
