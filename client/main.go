@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	"log"
-	"memo-RPC/client/ecommerce"
 	"time"
 
 	"google.golang.org/grpc"
@@ -12,8 +11,8 @@ import (
 )
 
 const (
-	UserPort  = "9001"
-	EventPort = "9002"
+	UserPort  = ":9001"
+	EventPort = ":9002"
 )
 
 var (
@@ -21,18 +20,24 @@ var (
 )
 
 func main() {
-	//testUserService()
+	testUserService()
 	testEventService()
 }
 
 func testUserService() {
-	//certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
-	//if err != nil {
-	//	log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
-	//}
+	// 创建拨号选项
+	var opts []grpc.DialOption
+	// 从证书文件中为客户端构造 TLS 凭证
+	certs, err := credentials.NewClientTLSFromFile("../certs/server.pem", "memo-RPC")
+	if err != nil {
+		log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
+	} else {
+		opts = append(opts, grpc.WithTransportCredentials(certs))
+	}
+
 	// 拨号连接
-	conn, err := grpc.Dial(":"+UserPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	//conn, err := grpc.Dial(":"+UserPort, grpc.WithTransportCredentials(certs))
+	//conn, err := grpc.Dial(":"+UserPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(UserPort, opts...)
 	if err != nil {
 		log.Fatalf("grpc.Dial err: %v", err)
 	} else {
@@ -64,35 +69,34 @@ func testUserService() {
 		log.Fatalf("client.Login err: %v", err)
 	}
 	log.Printf("Token: %s", resp2.Token)
-	Token = resp2.Token
+	//Token = resp2.Token
 }
 
-// TokenAuth 通过实现 gRPC 中默认定义的 PerRPCCredentials，提供用于自定义认证的接口，它的作用是将所需的安全认证信息添加到每个 RPC 方法的上下文中。
-type TokenAuth struct {
-	token string
-}
-
-// GetRequestMetadata 获取当前请求认证所需的元数据
-func (auth *TokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	return map[string]string{"token": auth.token}, nil
-}
-
-// RequireTransportSecurity 是否需要基于 TLS 认证进行安全传输
-func (auth *TokenAuth) RequireTransportSecurity() bool { return false }
+//// TokenAuth 通过实现 gRPC 中默认定义的 PerRPCCredentials，提供用于自定义认证的接口，它的作用是将所需的安全认证信息添加到每个 RPC 方法的上下文中。
+//type TokenAuth struct {
+//	token string
+//}
+//
+//// GetRequestMetadata 获取当前请求认证所需的元数据
+//func (auth *TokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+//	return map[string]string{"token": auth.token}, nil
+//}
+//
+//// RequireTransportSecurity 是否需要基于 TLS 认证进行安全传输
+//func (auth *TokenAuth) RequireTransportSecurity() bool { return false }
 
 func testEventService() {
-	//certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
-	//if err != nil {
-	//	log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
-	//}
+	// 创建拨号选项
+	var opts []grpc.DialOption
+	// 从证书文件中为客户端构造 TLS 凭证
+	certs, err := credentials.NewClientTLSFromFile("../certs/server.pem", "memo-RPC")
+	if err != nil {
+		log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
+	} else {
+		opts = append(opts, grpc.WithTransportCredentials(certs))
+	}
 	// 拨号连接
-	conn, err := grpc.Dial(":"+EventPort,
-		//grpc.WithTransportCredentials(certs),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		//grpc.WithPerRPCCredentials(&TokenAuth{
-		//	token: "0",
-		//}),
-	)
+	conn, err := grpc.Dial(EventPort, opts...)
 	if err != nil {
 		log.Fatalf("grpc.Dial err: %v", err)
 	} else {
@@ -133,7 +137,7 @@ func testEventService() {
 	log.Printf("Greeting: %s", resp2.String())
 
 	resp3, err := client.UpdateEvent(ctx, &pb.UpdateEventRequest{
-		Item: &ecommerce.Event{
+		Item: &pb.Event{
 			Id:   1,
 			Name: "test1 updated",
 		},

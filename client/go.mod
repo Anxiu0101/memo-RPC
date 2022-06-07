@@ -3,14 +3,18 @@ module memo-RPC/client
 go 1.18
 
 require (
-	google.golang.org/genproto v0.0.0-20220527130721-00d5c0f3be58
-	google.golang.org/grpc v1.46.2
+	google.golang.org/genproto v0.0.0-20220607140733-d738665f6195
+	google.golang.org/grpc v1.47.0
 	google.golang.org/protobuf v1.28.0
 )
 
 require (
+	github.com/ghodss/yaml v1.0.0 // indirect
+	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	golang.org/x/net v0.0.0-20220526153639-5463443f8c37 // indirect
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
+	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

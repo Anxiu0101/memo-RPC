@@ -15,7 +15,7 @@
 
 - [ ] 完成客户端和服务端的 TLS 连接设置
 - [ ] 完成客户端的 token 添加 和 服务端的拦截器验证 token 设置
-- [ ] 完成备忘录相关的业务代码
+- [x] 完成备忘录相关的业务代码
 
 
 ## 3. 思考
@@ -150,23 +150,21 @@ go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
 ```
 
 
-## 9. 关于用户认证
+## 9. 关于安全
 
 在这个 demo 中使用 gRPC 的拦截器与 token 实现对于用户操作权限的鉴权。
 
 在服务端入口增加拦截器代码
 
-```go
-	// 使用一元拦截器（grpc.UnaryInterceptor），验证请求
-	var interceptor grpc.UnaryServerInterceptor
-	interceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-		// 拦截普通方法请求，验证Token
-		err = service.CheckAuthority(ctx)
-		if err != nil {
-			return
-		}
-		// 继续处理请求
-		return handler(ctx, req)
-	}
-```
+参考该博客 [Go gRPC进阶-TLS认证+自定义方法认证（七） - 烟花易冷人憔悴 - 博客园 (cnblogs.com)](https://www.cnblogs.com/FireworksEasyCool/p/12710325.html)
+
+首先是开启 TLS 保证服务之间传输不会被篡改，这里需要使用 `openssl` 进行公钥以及私钥的生成。
+
+需要注意的是，在 go 1.15 后开始废弃 `CommonName`，因此推荐使用 SAN 证书。 
+
+> SAN(Subject Alternative Name) 是 SSL 标准 x509 中定义的一个扩展。使用了 SAN 字段的 SSL 证书，可以扩展此证书支持的域名，使得一个证书可以支持多个不同域名的解析。
+
+该博客中对于这个问题的处理做出了解释：[golang grpc 证书报错 - 董大轩 - 博客园 (cnblogs.com)](https://www.cnblogs.com/-xuan/p/15736133.html)
+
+其二是开启一元拦截器对传入的请求进行用户权限的认证。这里使用的是 JWT 的方案。
 
