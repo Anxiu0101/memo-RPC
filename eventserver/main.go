@@ -30,7 +30,7 @@ func main() {
 	var opts []grpc.ServerOption
 
 	// 使用证书文件和密钥文件为服务端构造 TLS 凭证
-	certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
+	certs, err := credentials.NewServerTLSFromFile("../certs/memo.pem", "../certs/memo.key")
 	if err != nil {
 		log.Printf("Failed to generate credentials %v", err)
 	} else {

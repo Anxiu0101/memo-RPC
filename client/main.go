@@ -28,7 +28,7 @@ func testUserService() {
 	// 创建拨号选项
 	var opts []grpc.DialOption
 	// 从证书文件中为客户端构造 TLS 凭证
-	certs, err := credentials.NewClientTLSFromFile("../certs/server.pem", "memo-RPC")
+	certs, err := credentials.NewClientTLSFromFile("../certs/memo.pem", "www.anxiu.online")
 	if err != nil {
 		log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
 	} else {
@@ -89,7 +89,7 @@ func testEventService() {
 	// 创建拨号选项
 	var opts []grpc.DialOption
 	// 从证书文件中为客户端构造 TLS 凭证
-	certs, err := credentials.NewClientTLSFromFile("../certs/server.pem", "memo-RPC")
+	certs, err := credentials.NewClientTLSFromFile("../certs/memo.pem", "www.anxiu.online")
 	if err != nil {
 		log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
 	} else {

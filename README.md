@@ -13,7 +13,7 @@
 
 ## 2. 任务
 
-- [ ] 完成客户端和服务端的 TLS 连接设置
+- [x] 完成客户端和服务端的 TLS 连接设置
 - [ ] 完成客户端的 token 添加 和 服务端的拦截器验证 token 设置
 - [x] 完成备忘录相关的业务代码
 
@@ -164,7 +164,8 @@ go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
 
 > SAN(Subject Alternative Name) 是 SSL 标准 x509 中定义的一个扩展。使用了 SAN 字段的 SSL 证书，可以扩展此证书支持的域名，使得一个证书可以支持多个不同域名的解析。
 
-该博客中对于这个问题的处理做出了解释：[golang grpc 证书报错 - 董大轩 - 博客园 (cnblogs.com)](https://www.cnblogs.com/-xuan/p/15736133.html)
+该博客中对于这个问题的处理做出了解释：[golang grpc 证书报错 - 董大轩 - 博客园 (cnblogs.com)](https://www.cnblogs.com/-xuan/p/15736133.html) 
+另外在 win 系统下该博客提供了较为详细的解决步骤：[GO 1.15 以上版本解决GRPC X509 Common Name field, use SANs or temporarily enable Common Name matching](https://blog.csdn.net/cuichenghd/article/details/109230584)
 
 其二是开启一元拦截器对传入的请求进行用户权限的认证。这里使用的是 JWT 的方案。
 

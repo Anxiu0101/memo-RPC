@@ -43,7 +43,7 @@ func main() {
 
 	// 使用证书文件和密钥文件为服务端构造 TLS 凭证
 	// FIXME 使用 SAN 代替 x509，或者将 go 版本降级至 1.15 以下
-	certs, err := credentials.NewServerTLSFromFile("../certs/server.pem", "../certs/server.key")
+	certs, err := credentials.NewServerTLSFromFile("../certs/memo.pem", "../certs/memo.key")
 	if err != nil {
 		log.Printf("Failed to generate credentials %v", err)
 	} else {
