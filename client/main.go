@@ -4,6 +4,7 @@ import (
 	"context"
 	"google.golang.org/grpc/credentials"
 	"log"
+	"memo-RPC/client/pkg/util"
 	"time"
 
 	"google.golang.org/grpc"
@@ -69,21 +70,8 @@ func testUserService() {
 		log.Fatalf("client.Login err: %v", err)
 	}
 	log.Printf("Token: %s", resp2.Token)
-	//Token = resp2.Token
+	Token = resp2.Token
 }
-
-//// TokenAuth 通过实现 gRPC 中默认定义的 PerRPCCredentials，提供用于自定义认证的接口，它的作用是将所需的安全认证信息添加到每个 RPC 方法的上下文中。
-//type TokenAuth struct {
-//	token string
-//}
-//
-//// GetRequestMetadata 获取当前请求认证所需的元数据
-//func (auth *TokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-//	return map[string]string{"token": auth.token}, nil
-//}
-//
-//// RequireTransportSecurity 是否需要基于 TLS 认证进行安全传输
-//func (auth *TokenAuth) RequireTransportSecurity() bool { return false }
 
 func testEventService() {
 	// 创建拨号选项
@@ -95,6 +83,13 @@ func testEventService() {
 	} else {
 		opts = append(opts, grpc.WithTransportCredentials(certs))
 	}
+
+	// 将用户登录获取到的 token 写入 TokenAuth 并传递给服务端
+	token := util.TokenAuth{
+		Token: Token,
+	}
+	opts = append(opts, grpc.WithPerRPCCredentials(&token))
+
 	// 拨号连接
 	conn, err := grpc.Dial(EventPort, opts...)
 	if err != nil {

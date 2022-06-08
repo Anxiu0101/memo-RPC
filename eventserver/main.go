@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"google.golang.org/grpc/credentials"
 	"log"
 	"memo-RPC/eventserver/conf"
@@ -40,19 +41,21 @@ func main() {
 	// 使用一元拦截器（grpc.UnaryInterceptor），验证请求
 	// TODO 增加流式请求拦截器
 	// FIXME 请求被拦截器阻断，连接提前结束
-	//var interceptor grpc.UnaryServerInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-	//	// 拦截普通方法请求，验证 Token
-	//	println("In Authority")
-	//	err = service.CheckAuthority(ctx)
-	//	if err != nil {
-	//		log.Fatalf("interceptor err: %v", err)
-	//		return nil, err
-	//	}
-	//	// 继续处理请求
-	//	return handler(ctx, req)
-	//}
-	//
-	//opts = append(opts, grpc.UnaryInterceptor(interceptor))
+	var interceptor grpc.UnaryServerInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+		// 拦截普通方法请求，验证 Token
+		log.Println("In Authority")
+		username, err := service.CheckAuthority(ctx)
+		if err != nil {
+			log.Fatalf("interceptor err: %v", err)
+			return nil, err
+		} else {
+			log.Printf("%v pass Authority", username)
+		}
+		// 继续处理请求
+		return handler(ctx, req)
+	}
+
+	opts = append(opts, grpc.UnaryInterceptor(interceptor))
 
 	// 创建新 grpc 服务
 	server := grpc.NewServer(opts...)
