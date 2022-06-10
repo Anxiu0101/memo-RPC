@@ -13,7 +13,7 @@ type TokenAuth struct {
 // GetRequestMetadata 获取当前请求认证所需的元数据
 func (auth *TokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	log.Printf("Get RequestMetadata: Auth Token: %v", auth.Token)
-	return map[string]string{"Authorization": auth.Token, "Ping": "Pong"}, nil
+	return map[string]string{"Authorization": auth.Token}, nil
 }
 
 // RequireTransportSecurity 是否需要基于 TLS 认证进行安全传输

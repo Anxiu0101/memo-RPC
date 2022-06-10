@@ -8,28 +8,6 @@ import (
 	"log"
 )
 
-// CheckAuthority 验证token
-//func CheckAuthority(ctx context.Context) error {
-//
-//	log.Println("Checking Token")
-//
-//	// Get metadata from Context
-//	md, ok := metadata.FromIncomingContext(ctx)
-//	if !ok {
-//		return status.Errorf(codes.Unauthenticated, "获取Token失败")
-//	}
-//	var (
-//		token string
-//	)
-//	if value, ok := md["token"]; ok {
-//		token = value[0]
-//	}
-//	if token == "0" {
-//		return status.Errorf(codes.Unauthenticated, "Token无效: token=%s", token)
-//	}
-//	return nil
-//}
-
 // Claims defines the struct containing the token claims.
 type Claims struct {
 	jwt.StandardClaims
@@ -43,10 +21,11 @@ func getTokenFromContext(ctx context.Context) (string, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return "", fmt.Errorf("ErrNoMetadataInContext")
+	} else {
+		log.Printf("service getTokenFromContext MD: %v", md)
 	}
 	// md 的类型是 type MD map[string][]string
-	token, ok := md["Authorization"]
-	log.Printf("Service Get Token: %v", token)
+	token, ok := md["authorization"]
 	if !ok || len(token) == 0 {
 		return "", fmt.Errorf("ErrNoAuthorizationInMetadata")
 	}
@@ -55,28 +34,35 @@ func getTokenFromContext(ctx context.Context) (string, error) {
 }
 
 func CheckAuthority(ctx context.Context) (username string, err error) {
-	tokenStr, err := getTokenFromContext(ctx)
-	log.Printf("tokenStr Content: %v", tokenStr)
+	//tokenStr, err := getTokenFromContext(ctx)
 	if err != nil {
 		log.Fatalf("Check Authority: get token from context error, %v", err)
 		return "", err
 	}
 	var clientClaims Claims
-	token, err := jwt.ParseWithClaims(tokenStr, &clientClaims, func(token *jwt.Token) (interface{}, error) {
-		if token.Header["alg"] != "HS256" {
-			log.Fatalf("Check Authority: ErrInvalidAlgorithm, %v", err)
-		}
-		return []byte("very secret"), nil
-	})
-	if err != nil {
-		log.Fatalf("Check Authority: jwt parse error, %v", err)
-		return "", err
-	}
-
-	if !token.Valid {
-		log.Fatalf("Check Authority: ErrInvalidToken, %v", err)
-		return "", err
-	}
+	//token, err := jwt.ParseWithClaims(tokenStr, &clientClaims, func(token *jwt.Token) (interface{}, error) {
+	//	if token.Header["alg"] != "HS256" {
+	//		log.Fatalf("Check Authority: ErrInvalidAlgorithm, %v", err)
+	//	}
+	//	return []byte("very secret"), nil
+	//})
+	//if err != nil {
+	//	log.Fatalf("Check Authority: jwt parse error, %v", err)
+	//	return "", err
+	//}
+	//clientClaims, err := util.ParseToken(tokenStr)
+	//if err != nil {
+	//	log.Fatalf("Check Authority: jwt parse error, %v", err)
+	//	return "", err
+	//} else if time.Now().Unix() > clientClaims.ExpiresAt {
+	//	err := new(error)
+	//	return "", err
+	//}
+	//
+	//if !token.Valid {
+	//	log.Fatalf("Check Authority: ErrInvalidToken, %v", err)
+	//	return "", err
+	//}
 
 	return clientClaims.Username, nil
 }

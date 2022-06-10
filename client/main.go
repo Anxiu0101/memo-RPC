@@ -103,7 +103,7 @@ func testEventService() {
 	client := pb.NewEventServiceClient(conn)
 
 	// 设置过期时间
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Hour)
 	defer cancel()
 
 	md, _ := metadata.FromOutgoingContext(ctx)
