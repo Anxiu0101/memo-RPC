@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 	"log"
 	"memo-RPC/eventserver/conf"
 	pb "memo-RPC/eventserver/ecommerce"
@@ -44,6 +45,9 @@ func main() {
 	var interceptor grpc.UnaryServerInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		// 拦截普通方法请求，验证 Token
 		log.Println("In Authority")
+		md, ok := metadata.FromIncomingContext(ctx)
+		log.Printf("Error: %v", ok)
+		log.Printf("MD Ping: %v", md["Ping"])
 		username, err := service.CheckAuthority(ctx)
 		if err != nil {
 			log.Fatalf("interceptor err: %v", err)

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 	"log"
 	"memo-RPC/client/pkg/util"
 	"time"
@@ -104,6 +105,9 @@ func testEventService() {
 	// 设置过期时间
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+
+	md, _ := metadata.FromOutgoingContext(ctx)
+	log.Printf("Check metadata: %v", md["Ping"])
 
 	// 访问该函数，获取响应
 	// 创建新事件

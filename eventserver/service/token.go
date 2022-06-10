@@ -46,6 +46,7 @@ func getTokenFromContext(ctx context.Context) (string, error) {
 	}
 	// md 的类型是 type MD map[string][]string
 	token, ok := md["Authorization"]
+	log.Printf("Service Get Token: %v", token)
 	if !ok || len(token) == 0 {
 		return "", fmt.Errorf("ErrNoAuthorizationInMetadata")
 	}
