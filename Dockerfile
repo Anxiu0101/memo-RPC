@@ -11,13 +11,17 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 RUN sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 # config Environment
-ENV GOROOT=/usr/local/go
-ENV PATH=$PATH:/usr/local/go/bin
+ENV GOROOT=/usr/lib/go
+ENV PATH=$PATH:/usr/lib/go/bin
 ENV GOPATH=/root/go
 ENV PATH=$GOPATH/bin:$PATH
 
 # config workspace
-WORKDIR home/Project/memo-RPC
+WORKDIR /home/Project/IMConnection
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+COPY *.go ./
 RUN go build -o /docker-gs-ping
 EXPOSE 8000
 ENTRYPOINT ["go","run","main.go"]
