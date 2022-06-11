@@ -18,7 +18,6 @@ ENV PATH=$GOPATH/bin:$PATH
 
 # config workspace
 WORKDIR home/Project/memo-RPC
-COPY *.go ./
 RUN go build -o /docker-gs-ping
 EXPOSE 8000
 ENTRYPOINT ["go","run","main.go"]
