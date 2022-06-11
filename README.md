@@ -224,11 +224,10 @@ go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
    ```go
    // 使用一元拦截器（grpc.UnaryInterceptor），验证请求
    // TODO 增加流式请求拦截器
-   // FIXME 请求被拦截器阻断，连接提前结束
    var interceptor grpc.UnaryServerInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
        // 拦截普通方法请求，验证 Token
        log.Println("filter:", info)
-       // 验证 t
+       // 验证 token
        username, err := service.CheckAuthority(ctx)
        if err != nil {
            log.Fatalf("interceptor err: %v", err)
@@ -243,5 +242,60 @@ go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
    opts = append(opts, grpc.UnaryInterceptor(interceptor))
    ```
 
+   在 `service.CheckAuthoruty(ctx)` 中对 token 进行解析和验证，若成功则返回用户名和空的错误信息
+
+   ```go
+   func CheckAuthority(ctx context.Context) (username string, err error) {
+   	md, ok := metadata.FromIncomingContext(ctx)
+   	if !ok {
+   		log.Fatalln("Check Authority: ErrNoMetadataInContext")
+   		return "", fmt.Errorf("ErrNoMetadataInContext")
+   	}
+   	// md 的类型是 type MD map[string][]string
+   	// Attention: metadata 里的 key 将会全部被转化为小写的，只能用小写的查
+   	token, ok := md["authorization"]
+   	if !ok || len(token) == 0 {
+   		log.Fatalln("Check Authority: ErrNoAuthorizationInMetadata")
+   		return "", fmt.Errorf("ErrNoAuthorizationInMetadata")
+   	}
+   	
+   	var tokenStr = token[0]
+   	
+   	var clientClaims *Claims
+   	clientClaims, err = ParseToken(tokenStr)
+   	
+   	if err != nil {
+   		log.Fatalf("Check Authority: jwt parse error, %v", err)
+   		return "", err
+   	} else if time.Now().Unix() > clientClaims.ExpiresAt {
+   		log.Fatalf("Check Authority: ErrInvalidToken, %v", err)
+   		return "", err
+   	}
+   	
+   	return clientClaims.Username, nil
    
+   	return "Anxiu", nil
+   }
+   
+   var jwtSecret = []byte("")
+   
+   // ParseToken 根据传入的 token 值获取到 Claims 对象信息，进而获取其中的用户名和密码
+   func ParseToken(token string) (*Claims, error) {
+   
+   	// 用于解析鉴权的声明，方法内部主要是具体的解码和校验的过程，最终返回 *Token
+   	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+   		log.Printf("JWT Secret: %v", jwtSecret)
+   		return jwtSecret, nil
+   	})
+   
+   	if tokenClaims != nil {
+   		// 从 tokenClaims 中获取到 Claims 对象，并使用断言，将该对象转换为我们自己定义的 Claims
+   		// 要传入指针，项目中结构体都是用指针传递，节省空间。
+   		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
+   			return claims, nil
+   		}
+   	}
+   
+   	return nil, err
+   }
 

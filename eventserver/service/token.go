@@ -6,6 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"google.golang.org/grpc/metadata"
 	"log"
+	"time"
 )
 
 // Claims defines the struct containing the token claims.
@@ -16,66 +17,46 @@ type Claims struct {
 	Username string `json:"username"`
 }
 
-// Step1. 从 context 的 metadata 中，取出 token
-func getTokenFromContext(ctx context.Context) (string, error) {
+func CheckAuthority(ctx context.Context) (username string, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
+		log.Fatalln("Check Authority: ErrNoMetadataInContext")
 		return "", fmt.Errorf("ErrNoMetadataInContext")
-	} else {
-		log.Printf("service getTokenFromContext MD: %v", md)
 	}
 	// md 的类型是 type MD map[string][]string
+	// Attention: metadata 里的 key 将会全部被转化为小写的，只能用小写的查
 	token, ok := md["authorization"]
 	if !ok || len(token) == 0 {
+		log.Fatalln("Check Authority: ErrNoAuthorizationInMetadata")
 		return "", fmt.Errorf("ErrNoAuthorizationInMetadata")
 	}
-	// 因此，token 是一个字符串数组，我们只用了 token[0]
-	return token[0], nil
-}
 
-func CheckAuthority(ctx context.Context) (username string, err error) {
-	tokenStr, err := getTokenFromContext(ctx)
+	var tokenStr = token[0]
+
+	var clientClaims *Claims
+	clientClaims, err = ParseToken(tokenStr)
+
 	if err != nil {
-		log.Fatalf("Check Authority: get token from context error, %v", err)
+		log.Fatalf("Check Authority: jwt parse error, %v", err)
+		return "", err
+	} else if time.Now().Unix() > clientClaims.ExpiresAt {
+		log.Fatalf("Check Authority: ErrInvalidToken, %v", err)
 		return "", err
 	}
-	log.Printf("Token content: %v", tokenStr)
 
-	//token, err := jwt.ParseWithClaims(tokenStr, &clientClaims, func(token *jwt.Token) (interface{}, error) {
-	//	if token.Header["alg"] != "HS256" {
-	//		log.Fatalf("Check Authority: ErrInvalidAlgorithm, %v", err)
-	//	}
-	//	return []byte("very secret"), nil
-	//})
-	//if err != nil {
-	//	log.Fatalf("Check Authority: jwt parse error, %v", err)
-	//	return "", err
-	//}
-
-	//var clientClaims *Claims
-	//clientClaims, err = ParseToken(tokenStr)
-	//if time.Now().Unix() > clientClaims.ExpiresAt {
-	//	log.Fatalf("Check Authority: ErrInvalidToken, %v", err)
-	//	return "", err
-	//} else if err != nil {
-	//	log.Fatalf("Check Authority: jwt parse error, %v", err)
-	//	return "", err
-	//}
-	//if !tokenStr.Valid {
-	//	log.Fatalf("Check Authority: ErrInvalidToken, %v", err)
-	//	return "", err
-	//}
+	return clientClaims.Username, nil
 
 	return "Anxiu", nil
 }
 
-var jwtSecret = []byte("")
+var jwtSecret = []byte("23347$040412")
 
 // ParseToken 根据传入的 token 值获取到 Claims 对象信息，进而获取其中的用户名和密码
 func ParseToken(token string) (*Claims, error) {
 
 	// 用于解析鉴权的声明，方法内部主要是具体的解码和校验的过程，最终返回 *Token
 	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		log.Printf("JWT Secret: %v", jwtSecret)
 		return jwtSecret, nil
 	})
 

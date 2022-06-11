@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/metadata"
 	"log"
 	"memo-RPC/client/pkg/util"
 	"time"
@@ -70,7 +69,6 @@ func testUserService() {
 	if err != nil {
 		log.Fatalf("client.Login err: %v", err)
 	}
-	log.Printf("Token: %s", resp2.Token)
 	Token = resp2.Token
 }
 
@@ -106,9 +104,6 @@ func testEventService() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Hour)
 	defer cancel()
 
-	md, _ := metadata.FromOutgoingContext(ctx)
-	log.Printf("Check metadata: %v", md["Ping"])
-
 	// 访问该函数，获取响应
 	// 创建新事件
 	//log.Println("Before Creating Event")
@@ -127,24 +122,24 @@ func testEventService() {
 	//log.Printf("Greeting: %s", eventResp1.String())
 	//log.Println("After Creating Event")
 
-	resp2, err := client.DeleteEvent(ctx, &pb.DeleteEventRequest{
-		Id: "2",
-	})
-	if err != nil {
-		log.Fatalf("client.DeleteEvent err: %v", err)
-	}
-	log.Printf("Greeting: %s", resp2.String())
-
-	resp3, err := client.UpdateEvent(ctx, &pb.UpdateEventRequest{
-		Item: &pb.Event{
-			Id:   1,
-			Name: "test1 updated",
-		},
-	})
-	if err != nil {
-		log.Fatalf("client.UpdateEvent err: %v", err)
-	}
-	log.Printf("Greeting: %s", resp3.String())
+	//resp2, err := client.DeleteEvent(ctx, &pb.DeleteEventRequest{
+	//	Id: "2",
+	//})
+	//if err != nil {
+	//	log.Fatalf("client.DeleteEvent err: %v", err)
+	//}
+	//log.Printf("Greeting: %s", resp2.String())
+	//
+	//resp3, err := client.UpdateEvent(ctx, &pb.UpdateEventRequest{
+	//	Item: &pb.Event{
+	//		Id:   1,
+	//		Name: "test1 updated",
+	//	},
+	//})
+	//if err != nil {
+	//	log.Fatalf("client.UpdateEvent err: %v", err)
+	//}
+	//log.Printf("Greeting: %s", resp3.String())
 
 	resp4, err := client.ShowEvent(ctx, &pb.ShowEventRequest{
 		Id: "1",
