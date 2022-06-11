@@ -18,8 +18,6 @@ ENV PATH=$GOPATH/bin:$PATH
 
 # config workspace
 WORKDIR home/Project/memo-RPC
-COPY go.mod ./
-COPY go.sum ./
 RUN go mod download
 COPY *.go ./
 RUN go build -o /docker-gs-ping
