@@ -169,3 +169,79 @@ go-callvis -debug -tests E:\Desktop\West2Go\6\memo-RPC\server\ecommerce\
 
 其二是开启一元拦截器对传入的请求进行用户权限的认证。这里使用的是 JWT 的方案。
 
+在使用令牌验证这一块，整个流程是
+
+1. Client 向 User Server 发送登陆请求，获取 token
+
+   ```go
+   resp2, err := client.Login(ctx, &pb.UserLoginRequest{
+       Username: "Anxiu",
+       Password: "123456",
+   })
+   if err != nil {
+       log.Fatalf("client.Login err: %v", err)
+   }
+   Token = resp2.Token
+   ```
+
+   
+
+1. Client 向 Event Server 发送 token
+
+   ```go
+   // 将用户登录获取到的 token 写入 TokenAuth 并传递给服务端
+   token := util.TokenAuth{
+       Token: Token,
+   }
+   opts = append(opts, grpc.WithPerRPCCredentials(&token))
+   ```
+
+   将 `grpc.WithPerRPCCredentials(&token)` 添加到客户端拨号选项器之中，
+   想要使用 `grpc.WithPerRPCCredentials()`，则需要实现这个接口。接口中包含两个函数，分别是 `GetRequestMetadata()` 和 `RequireTransportSecurity()`
+
+   ```go
+   // TokenAuth 通过实现 gRPC 中默认定义的 PerRPCCredentials，提供用于自定义认证的接口，它的作用是将所需的安全认证信息添加到每个 RPC 方法的上下文中。
+   type TokenAuth struct {
+   	Token string
+   }
+   
+   // GetRequestMetadata 获取当前请求认证所需的元数据
+   func (auth *TokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+   	log.Printf("Get RequestMetadata: Auth Token: %v", auth.Token)
+   	return map[string]string{"Authorization": auth.Token}, nil
+   }
+   
+   // RequireTransportSecurity 是否需要基于 TLS 认证进行安全传输
+   func (auth *TokenAuth) RequireTransportSecurity() bool {
+   	return true
+   }
+   ```
+
+   > PerRPCCredentials defines the common interface for the credentials which need to attach security information to every RPC (e.g., oauth2).
+
+2. Event Server 端开启拦截器对传输来的请求中，metadata 包含的令牌信息进行解析验证，
+
+   ```go
+   // 使用一元拦截器（grpc.UnaryInterceptor），验证请求
+   // TODO 增加流式请求拦截器
+   // FIXME 请求被拦截器阻断，连接提前结束
+   var interceptor grpc.UnaryServerInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+       // 拦截普通方法请求，验证 Token
+       log.Println("filter:", info)
+       // 验证 t
+       username, err := service.CheckAuthority(ctx)
+       if err != nil {
+           log.Fatalf("interceptor err: %v", err)
+           return nil, err
+       } else {
+           log.Printf("%v pass Authority", username)
+       }
+       // 继续处理请求
+       return handler(ctx, req)
+   }
+   
+   opts = append(opts, grpc.UnaryInterceptor(interceptor))
+   ```
+
+   
+

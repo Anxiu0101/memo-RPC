@@ -9,7 +9,6 @@ import (
 var jwtSecret = []byte(conf.Cfg.App.JwtSecret)
 
 type Claims struct {
-	UID      uint   `json:"uid"`
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
@@ -21,7 +20,6 @@ func GenerateToken(uid uint, username string) (string, error) {
 	expireTime := nowTime.Add(3 * time.Hour)
 
 	claims := Claims{
-		uid,
 		username,
 		jwt.StandardClaims{
 			// 过期时间
