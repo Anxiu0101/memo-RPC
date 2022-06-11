@@ -45,8 +45,6 @@ func CheckAuthority(ctx context.Context) (username string, err error) {
 	}
 
 	return clientClaims.Username, nil
-
-	return "Anxiu", nil
 }
 
 var jwtSecret = []byte("23347$040412")
