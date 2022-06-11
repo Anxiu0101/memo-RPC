@@ -12,7 +12,7 @@ RUN sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 # config Environment
 ENV GOROOT=/usr/local/go
-ENV PATH=$PATH:/usr/lib/go/bin
+ENV PATH=$PATH:/usr/local/go/bin
 ENV GOPATH=/root/go
 ENV PATH=$GOPATH/bin:$PATH
 
